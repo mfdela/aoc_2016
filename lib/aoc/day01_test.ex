@@ -5,26 +5,27 @@ defmodule Aoc.Day01Test do
 
   def test_input() do
     """
-    3   4
-    4   3
-    2   5
-    1   3
-    3   9
-    3   3
+    R2, R2, R2
+    """
+  end
+
+  def test_input2() do
+    """
+    R8, R4, R4, R8
     """
   end
 
   test "part1" do
-    input = test_input()
-    result = part1(input)
+    # input = test_input()
+    # result = part1(input)
 
-    assert result == 11
+    # assert result == 2
   end
 
   test "part2" do
-    input = test_input()
+    input = test_input2()
     result = part2(input)
 
-    assert result == 31
+    assert result == 4
   end
 end

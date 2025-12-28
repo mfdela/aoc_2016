@@ -1,6 +1,6 @@
-# Aoc2024
+# Aoc2016
 
-This is a project to solve the Advent of Code 2024 puzzles in [Elixir](https://elixir-lang.org/).
+This is a project to solve the Advent of Code 2016 puzzles in [Elixir](https://elixir-lang.org/).
 
 The scaffolding for the project is heavily lifted from [advent-generator](https://github.com/ChristianAlexander/advent-generator)
 and uses [Igniter](https://github.com/ash-project/igniter) to generate each day project files and downloading input files.

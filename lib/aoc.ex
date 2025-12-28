@@ -13,14 +13,7 @@ defmodule Aoc do
 
   """
   def hello do
-    IO.puts("Advent of Code 2024")
+    IO.puts("Advent of Code 2016")
   end
 
-  # utilities
-  def comb(0, _), do: [[]]
-  def comb(_, []), do: []
-
-  def comb(m, [h | t]) do
-    for(l <- comb(m - 1, t), do: [h | l]) ++ comb(m, t)
-  end
 end
