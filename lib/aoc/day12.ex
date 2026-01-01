@@ -62,7 +62,7 @@ defmodule Aoc.Day12 do
     execute_instructions(instructions, new_registers, new_offset)
   end
 
-  def execute_opscode(nil, registers, offset), do: {registers, nil}
+  def execute_opscode(nil, registers, _offset), do: {registers, nil}
 
   def execute_opscode({:cpy, x, y}, registers, offset) do
     cpy = Map.get(registers, x, x)
