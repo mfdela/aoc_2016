@@ -1,13 +1,32 @@
 defmodule Aoc.Day14 do
   def part1(args) do
-    args
-    |> find_64th_key()
+    # On my laptop, this takes about 5 seconds
+    # args
+    # |> find_64th_key()
+    # |> List.last()
+
+    # Heuristically, we can use a cache of 24000 hashes to speed up the process
+    hash_cache =
+      args
+      |> generate_blocks_hash(24000)
+
+    find_64th_key(args, 1, hash_cache)
     |> List.last()
   end
 
   def part2(args) do
-    args
-    |> find_64th_key(2017)
+    # On my laptop, this takes about 30 seconds
+    # args
+    # |> find_64th_key(2017)
+    # |> List.last()
+
+    # Heuristically, we can use a cache of 24000 hashes to speed up the process
+    # This now takes about 15 seconds
+    hash_cache =
+      args
+      |> generate_blocks_hash(24000, 2017)
+
+    find_64th_key(args, 2017, hash_cache)
     |> List.last()
   end
 
@@ -54,7 +73,7 @@ defmodule Aoc.Day14 do
     )
   end
 
-  def find_next_key(input, index \\ 0, cache \\ %{}, stretching) do
+  def find_next_key(input, index, cache, stretching) do
     {_first_hash, start_index, updated_cache, matching_char} =
       find_first_key(input, index, 3, cache, stretching)
 
@@ -71,12 +90,41 @@ defmodule Aoc.Day14 do
     end
   end
 
-  def find_64th_key(input, stretching \\ 1) do
-    Stream.iterate({0, nil, %{}}, fn {index, _last_index, cache} ->
-      {found_index, found_cache} = find_next_key(input, index, cache, stretching)
+  def find_64th_key(input, stretching \\ 1, cache \\ %{}) do
+    Stream.iterate({0, nil, cache}, fn {index, _last_index, next_cache} ->
+      {found_index, found_cache} = find_next_key(input, index, next_cache, stretching)
       {found_index + 1, found_index, found_cache}
     end)
     |> Enum.take(65)
     |> Enum.map(&elem(&1, 1))
+  end
+
+  def generate_blocks_hash(input, size, stretching \\ 1) do
+    parallelism = System.schedulers_online()
+    parallel_tasks_chunk = div(size, parallelism)
+
+    Enum.map(
+      0..(parallelism - 1),
+      fn i ->
+        Task.async(fn ->
+          generate_hash(
+            input,
+            i * parallel_tasks_chunk,
+            (i + 1) * parallel_tasks_chunk - 1,
+            stretching
+          )
+        end)
+      end
+    )
+    |> Enum.map(&Task.await(&1, 60000))
+    |> List.flatten()
+    |> Enum.reduce(%{}, &Map.merge(&2, &1))
+  end
+
+  def generate_hash(input, start_index, end_index, stretching) do
+    Enum.reduce(start_index..end_index, %{}, fn i, acc ->
+      string_to_hash = input <> Integer.to_string(i)
+      Map.put(acc, string_to_hash, hash(string_to_hash, stretching))
+    end)
   end
 end
